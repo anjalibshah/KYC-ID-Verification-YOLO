@@ -1,0 +1,6 @@
+---
+applications:
+ - name: KYC-ID-Verification
+   random-route: false
+   memory: 2048M
+   disk_quota: 2048M

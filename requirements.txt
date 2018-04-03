@@ -1,0 +1,9 @@
+Flask==0.12.2
+cf-deployment-tracker==1.0.4
+tensorflow==1.6.0
+Keras==2.1.5
+Pillow==4.0.0
+h5py==2.6.0
+numpy==1.14.2
+scipy==1.0.1
+pip==9.0.3
