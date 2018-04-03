@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Yolo Face Detection Demo</title>
+
+    <!-- Bootstrap -->
+    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet">
+    <link href="static/styles.css" rel="stylesheet">
+</head>
+
+<body>
+    <div class="container">
+        <h1>YOLO Face Detection for Identity Verification</h1>
+        <p>Upload an image of a photo ID such as driver's license!</p>
+        <div class="input-group-lg center-block tf-image-pane">
+          <ul class="nav nav-tabs">
+            <!--li class="active"><a data-toggle="tab" href="#url">Paste Image URL</a></li-->
+            <li class="active"><a data-toggle="tab" href="#upload">Upload an Image</a></li>
+          </ul>
+
+          <div class="tab-content">
+            <div id="url" class="tab-pane fade">
+              <div class="input-group">
+                <input id="image_url" type="text" class="form-control" placeholder="URL" aria-describedby="sizing-addon1" value="" />
+                <span class="input-group-btn">
+                    <button class="btn btn-primary"
+                            onclick="onUrlSubmit($('#image_url').val())">
+                      Submit
+                    </button>
+                </span>
+              </div>
+            </div>
+            <div id="upload" class="tab-pane fade in active">
+              <div class="input-group">
+                <span class="input-group-btn">
+                  <span class="btn btn-default btn-upload">
+                    <input type="file" accept="image/*" id="upload_input"
+                           onchange="onUpload(this.files[0])">
+                  </span>
+                </span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        
+        <!-- Image preview. -->
+        <div class="col-sm-6" id="preview">
+          <h4 id="imgpreview"> Preview </h4>
+          <img id="image-preview" src="" width="90%"></img>
+          <span class="input-group-btn classify-button">
+              <button id="detect-btn" class="btn btn-info" onclick="detectPII()">Detect</button>
+          </span>
+        </div>
+
+        <div id="loading" >Uploading and Detecting..</div>
+        <div id="error" class="text-danger"></div>
+        
+        <h4 id="results"> Processed </h4>
+        <!-- Image processed. -->
+        <div class="col-sm-6 id=" id="processed">
+          <img id="image-processed" src="" width="90%"></img>
+        </div>
+    </div>
+    <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+    <!-- Include all compiled plugins (below), or include individual files as needed -->
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+    <script src="static/antixss.js" type="text/javascript"></script>
+
+    <script>
+        var fileType = null;
+        var data = null;
+
+        // Upload image and get classification results.
+        function detectPII() {
+          var contentType, reqData;
+          var formData = new FormData();
+
+          if (fileType === 'url') {
+            contentType = 'application/json';
+            reqData =  JSON.stringify({'url': data });
+          } else {
+            formData.append('file', data);
+            contentType = false;
+            reqData = formData;
+          }
+
+          $('#detect-btn').hide();
+          $('#loading').show();
+          $('#error').html('');
+          $('#processed').toggle(false);
+          $.ajax({
+            method: "POST",
+            url: "./api/detect",
+            data: reqData,
+            contentType: contentType,
+            processData: false,
+            cache: false
+          })
+          .done(function(data) {
+            $('#loading').hide();
+            $('#results').show();
+            $('#image-processed').prop('src', "static/outimage/" + data);
+            $('#processed').toggle(true);
+          })
+          .fail(function(data) {
+            $('#error').html(data.responseText);
+          })
+          .always(function() {
+            $('#loading').hide();
+          });;
+        }
+
+        function onUrlSubmit(url) {
+          console.log('URL SUBMitted');
+          $('#image-preview').prop('src', url);
+          $('#preview').toggle(true);
+          fileType = 'url';
+          data = url;
+        }
+
+        function onUpload(file) {
+          $('#image-preview').prop('src', window.URL.createObjectURL(file));
+          $('#preview').toggle(true);
+          $('#processed').toggle(false);
+          $('#results').hide();
+          $('#detect-btn').show();
+          fileType = 'upload';
+          data = file;
+        }
+
+        $("#upload_input").val('');
+        $('#preview').toggle($('#image_preview').src);
+        $('#processed').toggle($('#image_processed').src);
+        $('#loading').hide();
+        $('#results').hide();
+        $('#detect-btn').show();
+    </script>
+   
+</body>
+</html>

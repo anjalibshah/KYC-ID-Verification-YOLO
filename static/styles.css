@@ -1,0 +1,37 @@
+body {
+  text-align: center;
+  background: #fbfbfb;
+}
+
+.tab-pane {
+  padding-top: 10px;
+}
+
+.tf-image-pane {
+  width: 60%;
+  margin-top: 5%;
+  border-style: solid;
+  border-color: #ececec;
+  padding: 15px;
+}
+
+.btn-upload {
+  width: 100%;
+}
+
+#preview {
+  margin-top: 10px;
+}
+
+#image-preview {
+  border: 1px solid #ececec;
+  box-shadow: 0 4px 6px 0 rgba(0, 0, 0, 0.2), 0 5px 15px 0 rgba(0, 0, 0, 0.18);
+}
+
+.classify-button {
+  padding-top: 10px;
+}
+
+#results {
+  margin-top: 20px;
+}
